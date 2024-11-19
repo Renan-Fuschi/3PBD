@@ -1,0 +1,123 @@
+--Solução_1
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Depto = (SELECT Numero FROM DEPARTAMENTO WHERE Nome = 'Engenharia Civil');
+
+--Solução_2
+SELECT P.Numero AS Numero_Projeto, 
+       D.Numero AS Numero_Departamento, 
+       E.Nome AS Nome_Gerente
+FROM PROJETO P
+JOIN DEPARTAMENTO_PROJETO DP ON P.Numero = DP.Numero_Projeto
+JOIN DEPARTAMENTO D ON DP.Numero_Depto = D.Numero
+JOIN EMPREGADO E ON D.RG_Gerente = E.RG
+WHERE P.Localizacao = 'São Paulo';
+
+--Solução_3
+SELECT E.Nome 
+FROM EMPREGADO E
+WHERE NOT EXISTS (
+    SELECT P.Numero 
+    FROM PROJETO P
+    JOIN DEPARTAMENTO_PROJETO DP ON P.Numero = DP.Numero_Projeto
+    WHERE DP.Numero_Depto = 3
+    MINUS
+    SELECT EP.Numero_Projeto 
+    FROM EMPREGADO_PROJETO EP
+    WHERE EP.RG_Empregado = E.RG
+);
+
+--Solução_4
+SELECT DISTINCT P.Numero 
+FROM PROJETO P
+JOIN DEPARTAMENTO_PROJETO DP ON P.Numero = DP.Numero_Projeto
+JOIN DEPARTAMENTO D ON DP.Numero_Depto = D.Numero
+LEFT JOIN EMPREGADO_PROJETO EP ON P.Numero = EP.Numero_Projeto
+LEFT JOIN EMPREGADO E ON (EP.RG_Empregado = E.RG OR D.RG_Gerente = E.RG)
+WHERE E.Nome = 'Fernando';
+
+--Solução_5
+SELECT Nome 
+FROM EMPREGADO 
+WHERE RG NOT IN (SELECT RG_Responsavel FROM DEPENDENTES);
+
+--Solução_6
+SELECT DISTINCT E.Nome 
+FROM EMPREGADO E
+JOIN DEPARTAMENTO D ON E.RG = D.RG_Gerente
+WHERE E.RG IN (SELECT RG_Responsavel FROM DEPENDENTES);
+
+--Solução_7
+SELECT DISTINCT DP.Numero_Depto 
+FROM PROJETO P
+JOIN DEPARTAMENTO_PROJETO DP ON P.Numero = DP.Numero_Projeto
+WHERE P.Localizacao = 'Rio Claro';
+
+--Solução_8
+SELECT DISTINCT E.Nome, E.RG 
+FROM EMPREGADO E
+WHERE E.RG IN (SELECT RG_Supervisor FROM EMPREGADO);
+
+--Solução_9
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Salario >= 2000.00;
+
+--Solução_10
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Nome LIKE 'J%';
+
+--Solução_11
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Nome LIKE '%Luiz%' OR Nome LIKE '%Luis%';
+
+--Solução_12
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Depto = (SELECT Numero FROM DEPARTAMENTO WHERE Nome = 'Engenharia Civil');
+
+--Solução_13
+SELECT D.Nome 
+FROM DEPARTAMENTO D
+JOIN DEPARTAMENTO_PROJETO DP ON D.Numero = DP.Numero_Depto
+WHERE DP.Numero_Projeto = (SELECT Numero FROM PROJETO WHERE Nome = 'Motor 3');
+
+--Solução_14
+SELECT E.Nome 
+FROM EMPREGADO E
+JOIN EMPREGADO_PROJETO EP ON E.RG = EP.RG_Empregado
+WHERE EP.Numero_Projeto = (SELECT Numero FROM PROJETO WHERE Nome = 'Financeiro 1');
+
+--Solução_15
+SELECT E.Nome 
+FROM EMPREGADO E
+JOIN EMPREGADO S ON E.RG_Supervisor = S.RG
+WHERE S.Salario BETWEEN 2000 AND 2500;
+
+--Solução_16
+SELECT DISTINCT E.Nome 
+FROM EMPREGADO E
+JOIN DEPARTAMENTO D ON E.RG = D.RG_Gerente
+WHERE E.RG IN (SELECT RG_Responsavel FROM DEPENDENTES);
+
+--Solução_17
+UPDATE EMPREGADO 
+SET Salario = 3000.00 
+WHERE Depto = 2;
+
+--Solução_18
+UPDATE EMPREGADO 
+SET Salario = Salario * 1.10;
+
+--Solução_19
+SELECT AVG(Salario) AS Media_Salarial 
+FROM EMPREGADO;
+
+--Solução_20
+SELECT Nome 
+FROM EMPREGADO 
+WHERE Salario > (SELECT AVG(Salario) FROM EMPREGADO)
+ORDER BY Nome;
+
